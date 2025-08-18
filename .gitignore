@@ -1,0 +1,45 @@
+# Build / compilação
+bin/
+obj/
+out/
+
+# Configurações locais do VS / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.docstates
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.cache
+*.swp
+
+# Banco de dados local
+*.db
+*.mdf
+*.ldf
+
+# Docker
+*.env
+docker-compose.override.yml
+
+# Pacotes NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Configurações sensíveis
+appsettings.Development.json
+secrets.json
+
+# Outros arquivos não necessários
+*.dbmdl
+*.bak
+
+# HTTP client files locais (ex: VS Code REST client)
+*.http

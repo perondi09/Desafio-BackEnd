@@ -1,0 +1,63 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  # Serviço da sua API .NET
+  api:
+    # Constrói a imagem a partir do Dockerfile no diretório atual (.)
+    build: .
+    container_name: vehicle_control_api
+    ports:
+      # Mapeia a porta 8080 do host para a 8080 do contêiner
+      - "8080:8080"
+    environment:
+      # Adicionado para habilitar o modo de desenvolvimento e o Swagger
+      - ASPNETCORE_ENVIRONMENT=Development
+      # Variáveis de ambiente que sua API usará para se conectar aos outros serviços.
+      # Os hosts 'postgres' e 'redis' são os nomes dos serviços definidos neste arquivo.
+      - ConnectionStrings__Database=Host=postgres;Port=5432;Database=vehicle_control_db;Username=Admin;Password=Senha123
+      - ConnectionStrings__Redis=redis:6379
+    # Garante que o banco e o redis iniciem antes da sua API
+    depends_on:
+      - postgres
+      - redis
+    # Conecta o container a nossa rede customizada
+    networks:
+      - app-network
+
+  # Serviço do Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=Admin
+      - POSTGRES_PASSWORD=Senha123
+      - POSTGRES_DB=vehicle_control_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Serviço do Redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+# Define os volumes para persistir os dados
+volumes:
+  postgres_data:
+  redis_data:
+
+# Define a rede que permitirá a comunicação entre os contêineres
+networks:
+  app-network:
+    driver: bridge

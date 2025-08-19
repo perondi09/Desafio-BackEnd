@@ -22,6 +22,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// var consumer = new VehicleCreatedConsumer(app.Services.GetRequiredService<AppDbContext>());
+// consumer.Start();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -8,10 +8,12 @@ namespace VehicleControl.Services.Vehicle
     public class VehicleService : IVehicleInterface
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<VehicleService> _logger;
 
-        public VehicleService(AppDbContext context)
+        public VehicleService(AppDbContext context, ILogger<VehicleService> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<ResponseModel<VehicleModel>> CreateVehicle(VehicleCreateDto vehicleCreateDto)
@@ -20,6 +22,16 @@ namespace VehicleControl.Services.Vehicle
 
             try
             {
+                _logger.LogInformation("Attempting to create vehicle with plate {Plate}", vehicleCreateDto.Plate);
+                var existingVehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Plate == vehicleCreateDto.Plate);
+                if (existingVehicle != null)
+                {
+                    _logger.LogWarning("Plate {Plate} already exists", vehicleCreateDto.Plate);
+                    response.Message = "Plate already exists";
+                    response.Status = false;
+                    return response;
+                }
+
                 var vehicle = new VehicleModel
                 {
                     Indentifier = vehicleCreateDto.Indentifier,
@@ -31,6 +43,11 @@ namespace VehicleControl.Services.Vehicle
                 _context.Vehicles.Add(vehicle);
                 await _context.SaveChangesAsync();
 
+                // _logger.LogInformation("Vehicle created with Id {Id}", vehicle.Id);
+
+                // var message = System.Text.Json.JsonSerializer.Serialize(vehicle);
+                // _messagingService.PublishVehicleCreated(message);
+
                 response.Data = vehicle;
                 response.Status = true;
                 response.Message = "Vehicle created successfully";
@@ -38,6 +55,7 @@ namespace VehicleControl.Services.Vehicle
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error creating vehicle");
                 response.Message = ex.Message;
                 response.Status = false;
                 return response;
@@ -147,6 +165,14 @@ namespace VehicleControl.Services.Vehicle
                     return response;
                 }
 
+                var hasRentals = await _context.Rentals.AnyAsync(r => r.VehicleId == idVehicle);
+                if (hasRentals)
+                {
+                    response.Message = "Cannot delete vehicle: there are rentals associated with this vehicle.";
+                    response.Status = false;
+                    return response;
+                }
+
                 _context.Vehicles.Remove(vehicle);
                 await _context.SaveChangesAsync();
                 response.Data = vehicle;
@@ -155,7 +181,6 @@ namespace VehicleControl.Services.Vehicle
 
                 return response;
             }
-
             catch (Exception ex)
             {
                 response.Message = ex.Message;
@@ -163,5 +188,5 @@ namespace VehicleControl.Services.Vehicle
                 return response;
             }
         }
-    }   
+    }
 }

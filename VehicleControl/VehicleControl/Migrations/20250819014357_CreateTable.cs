@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace VehicleControl.Migrations
 {
     /// <inheritdoc />
-    public partial class MigrationCreate15 : Migration
+    public partial class CreateTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,16 +18,31 @@ namespace VehicleControl.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Cnpj = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Cnpj = table.Column<string>(type: "text", nullable: true),
                     BirthDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Cnh = table.Column<string>(type: "text", nullable: false),
-                    CnhCategory = table.Column<string>(type: "text", nullable: false),
-                    CnhImage = table.Column<string>(type: "text", nullable: false)
+                    Cnh = table.Column<string>(type: "text", nullable: true),
+                    CnhCategory = table.Column<int>(type: "integer", nullable: false),
+                    CnhImage = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Drivers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    VehicleId = table.Column<int>(type: "integer", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,10 +67,8 @@ namespace VehicleControl.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    VehicleId = table.Column<string>(type: "text", nullable: false),
-                    VehicleId1 = table.Column<int>(type: "integer", nullable: false),
-                    DriverId = table.Column<string>(type: "text", nullable: false),
-                    DriverId1 = table.Column<int>(type: "integer", nullable: false),
+                    VehicleId = table.Column<int>(type: "integer", nullable: false),
+                    DriverId = table.Column<int>(type: "integer", nullable: false),
                     RentalDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ReturnDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ExpectedReturnDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -66,33 +79,36 @@ namespace VehicleControl.Migrations
                 {
                     table.PrimaryKey("PK_Rentals", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Rentals_Drivers_DriverId1",
-                        column: x => x.DriverId1,
+                        name: "FK_Rentals_Drivers_DriverId",
+                        column: x => x.DriverId,
                         principalTable: "Drivers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Rentals_Vehicles_VehicleId1",
-                        column: x => x.VehicleId1,
+                        name: "FK_Rentals_Vehicles_VehicleId",
+                        column: x => x.VehicleId,
                         principalTable: "Vehicles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rentals_DriverId1",
+                name: "IX_Rentals_DriverId",
                 table: "Rentals",
-                column: "DriverId1");
+                column: "DriverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rentals_VehicleId1",
+                name: "IX_Rentals_VehicleId",
                 table: "Rentals",
-                column: "VehicleId1");
+                column: "VehicleId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Notifications");
+
             migrationBuilder.DropTable(
                 name: "Rentals");
 

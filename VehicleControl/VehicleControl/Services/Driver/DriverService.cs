@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using VehicleControl.Data;
 using VehicleControl.DTO.Vehicle.Driver;
 using VehicleControl.Models;
@@ -19,13 +20,30 @@ namespace VehicleControl.Services.Driver
 
             try
             {
+               
+                var existingCnpj = await _context.Drivers.FirstOrDefaultAsync(d => d.Cnpj == driverCreateDto.Cnpj);
+                if (existingCnpj != null)
+                {
+                    response.Message = "CNPJ already exists";
+                    response.Status = false;
+                    return response;
+                }
+              
+                var existingCnh = await _context.Drivers.FirstOrDefaultAsync(d => d.Cnh == driverCreateDto.Cnh);
+                if (existingCnh != null)
+                {
+                    response.Message = "CNH number already exists";
+                    response.Status = false;
+                    return response;
+                }
+
                 var driver = new DriverModel
                 {
                     Name = driverCreateDto.Name,
                     Cnpj = driverCreateDto.Cnpj,
                     BirthDate = driverCreateDto.BirthDate,
                     Cnh = driverCreateDto.Cnh,
-                    CnhCategory = driverCreateDto.CnhCategory,
+                    CnhCategory = (Models.CnhCategoryType)driverCreateDto.CnhCategoryType,
                     CnhImage = driverCreateDto.CnhImage
                 };
 
@@ -58,17 +76,17 @@ namespace VehicleControl.Services.Driver
                     return response;
                 }
 
+                // Atualiza apenas o caminho do arquivo da CNH
                 driver.CnhImage = driverUpdateDto.CnhImage;
                 _context.Drivers.Update(driver);
                 await _context.SaveChangesAsync();
 
                 response.Data = driver;
                 response.Status = true;
-                response.Message = "Driver CNH updated successfully";
+                response.Message = "Driver CNH image path updated successfully";
 
                 return response;
             }
-
             catch (Exception ex)
             {
                 response.Message = ex.Message;

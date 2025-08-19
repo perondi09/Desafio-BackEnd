@@ -10,5 +10,6 @@ namespace VehicleControl.Data
         public DbSet<VehicleModel> Vehicles { get; set; }
         public DbSet<DriverModel> Drivers { get; set; }
         public DbSet<RentalModel> Rentals { get; set; }
+        public DbSet<NotificationModel> Notifications { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using VehicleControl.Data;
 namespace VehicleControl.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250817223704_MigrationCreate1.5")]
-    partial class MigrationCreate15
+    [Migration("20250819014357_CreateTable")]
+    partial class CreateTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,29 @@ namespace VehicleControl.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("NotificationModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
+                });
 
             modelBuilder.Entity("VehicleControl.Models.DriverModel", b =>
                 {
@@ -37,23 +60,18 @@ namespace VehicleControl.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Cnh")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("CnhCategory")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("CnhCategory")
+                        .HasColumnType("integer");
 
                     b.Property<string>("CnhImage")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Cnpj")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -69,11 +87,7 @@ namespace VehicleControl.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DriverId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("DriverId1")
+                    b.Property<int>("DriverId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("ExpectedReturnDate")
@@ -92,18 +106,14 @@ namespace VehicleControl.Migrations
                     b.Property<DateTime>("ReturnDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("VehicleId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("VehicleId1")
+                    b.Property<int>("VehicleId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DriverId1");
+                    b.HasIndex("DriverId");
 
-                    b.HasIndex("VehicleId1");
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("Rentals");
                 });
@@ -140,13 +150,13 @@ namespace VehicleControl.Migrations
                 {
                     b.HasOne("VehicleControl.Models.DriverModel", "Driver")
                         .WithMany()
-                        .HasForeignKey("DriverId1")
+                        .HasForeignKey("DriverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("VehicleControl.Models.VehicleModel", "Vehicle")
                         .WithMany()
-                        .HasForeignKey("VehicleId1")
+                        .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

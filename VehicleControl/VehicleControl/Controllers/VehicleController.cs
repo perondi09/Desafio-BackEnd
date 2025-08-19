@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using VehicleControl.DTO.Vehicle;
-using VehicleControl.Models;
 using VehicleControl.Services.Vehicle;
 
 namespace VehicleControl.Controllers
@@ -9,7 +7,7 @@ namespace VehicleControl.Controllers
     [Route("[controller]")]
     [ApiController]
     public class VehicleController : ControllerBase
-    {
+    {      
         private readonly IVehicleInterface _vehicleInterface;
 
         public VehicleController(IVehicleInterface vehicleInterface)

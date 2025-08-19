@@ -36,14 +36,31 @@ namespace VehicleControl.Services.Rental
                     response.Status = false;
                     return response;
                 }
-
-                // Validação da categoria da CNH
+               
                 if (driver.CnhCategory != CnhCategoryType.A && driver.CnhCategory != CnhCategoryType.AB)
                 {
                     response.Message = "Only drivers with CNH category A or AB can rent a motorcycle.";
                     response.Status = false;
                     return response;
                 }
+
+                var planDays = 0;
+                var dailyRate = 0m;
+                var plan = rentalCreateDto.Plan.ToLower();
+                switch (plan)
+                {
+                    case "7": planDays = 7; dailyRate = 30m; break;
+                    case "15": planDays = 15; dailyRate = 28m; break;
+                    case "30": planDays = 30; dailyRate = 22m; break;
+                    case "45": planDays = 45; dailyRate = 20m; break;
+                    case "50": planDays = 50; dailyRate = 18m; break;
+                    default:
+                        response.Message = "Invalid rental plan.";
+                        response.Status = false;
+                        return response;
+                }
+              
+                var totalValue = planDays * dailyRate;
 
                 var rental = new RentalModel
                 {
@@ -52,7 +69,8 @@ namespace VehicleControl.Services.Rental
                     RentalDate = rentalCreateDto.RentalDate,
                     ReturnDate = rentalCreateDto.ReturnDate,
                     ExpectedReturnDate = rentalCreateDto.ExpectedReturnDate,
-                    Plan = rentalCreateDto.Plan
+                    Plan = rentalCreateDto.Plan,
+                    Price = totalValue
                 };
 
                 _context.Rentals.Add(rental);
@@ -60,7 +78,7 @@ namespace VehicleControl.Services.Rental
 
                 response.Data = rental;
                 response.Status = true;
-                response.Message = "Rental created successfully";
+                response.Message = $"Rental created successfully. Price: {totalValue:C}";
                 return response;
             }
             catch (Exception ex)

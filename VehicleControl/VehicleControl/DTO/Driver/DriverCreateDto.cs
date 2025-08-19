@@ -1,5 +1,3 @@
-using VehicleControl.Models;
-
 namespace VehicleControl.DTO.Vehicle.Driver
 {
     public enum CnhCategoryType

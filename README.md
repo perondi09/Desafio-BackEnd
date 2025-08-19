@@ -18,7 +18,6 @@ Um desafio que me fez aperfeiçoar ainda mais meus conhecimentos e também adqui
 Antes de iniciar, verifique se você possui instalado:
 
 - [Docker](https://www.docker.com/)  
-- [Docker Compose](https://docs.docker.com/compose/)  
 
 ## Start
 

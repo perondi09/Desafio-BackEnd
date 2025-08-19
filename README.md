@@ -24,7 +24,12 @@ Antes de iniciar, verifique se você possui instalado:
 Para iniciar o projeto, execute o comando:
 
 ```javascript
+
+Na pasta onde esta localizado o arquivo dockerfile e docker-compose, de um:
+
 docker-compose up --build
+
+No terminal.
 
 Após a execução, acesse a aplicação em:
 👉 http://localhost:8080/swagger
